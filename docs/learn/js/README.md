@@ -1,11 +1,11 @@
 ---
-title: 'js深入学习'
+title: 'JS深入'
 sidebarDepth: 3
 ---
 
-## call & apply
+## call & apply & bind
 
-`call`, `apply` 两者都能改变 `this` 的指向， 两者的区别在于 `call` 接受的 `arguments`, `apply` 接受的是 `array`
+`call`, `apply` 两者都能改变 `this` 的指向， 两者的区别在于 `call` 接受的 `arguments`, `apply` 接受的是 `array` `bind` 和 `call` 一致，但是 `bind` 返回的是一个函数
 
 ## 防抖与节流
 
@@ -13,9 +13,75 @@ sidebarDepth: 3
 
 ### 防抖
 
+防抖是指在触发事件后在n秒内函数只执行一次， 防抖的事件一般是延时执行，需要立即执行的时候需要用节流
 
+```js 
+function debounce(fn, wait, immediate) {
+
+/**
+  * @fn 执行函数 
+  * @wait 等待时间
+  * @immediate Boolean 是否立即执行
+*/
+
+  if (!fn || typeof fn !== 'function') {
+    throw new Error('请检查函数是否传递~~')
+  }
+
+  wait = wait || 300;
+
+  let timeout = null;
+
+  return function () {
+
+    let context = this;
+    let args = arguments;
+
+    if (timeout) clearTimeout(timeout);
+
+    if (immediate) {
+
+      let _immediate = !timeout;
+
+      timeout = setTimeout(() => {
+        timeout = null;
+      }, wait)
+
+      if (_immediate) fn.apply(context, args);
+
+    } else {
+      timeout = setTimeout(() => {
+        fn.apply(context, args);
+      }, wait)
+    }
+  }
+}
+
+```
 
 ### 节流
+
+节流是指连续触发事件但是在 n 秒中只执行一次函数
+
+```js
+function throttle(fn, wait) {
+  let pervious = 0;
+  return function () {
+    let context = this;
+    let args = arguments;
+    let now = Date.now();
+
+    if (now - pervious > wait) {
+      fn.apply(context, args);
+      pervious = now;
+    }
+  }
+}
+```
+
+节流函数可以用 `timeout` 来实现， 其实就是防抖的立即执行
+
+对于函数的节流和防抖，随便使用哪一个都可以达到我们预期的效果，如果你希望你的事件能够在n秒内立即执行，建议你使用防抖的立即执行模式或者节流模式
 
 ## 深拷贝
 
@@ -152,62 +218,6 @@ tips: `promise` 一经创建就会立马执行, `async await` 将异步事件转
 
 参考：[一次性弄懂Event loop](https://juejin.im/post/5c3d8956e51d4511dc72c200#heading-7)
 
-## 递归
-
-程序不断的调用自身的过程就是递归， 递归相对普通的算法执行效率比较低，还容易造成栈溢出
-
-斐波纳契数列
-
-0、1、2、3、5、8、13、21、34 ...
-
-范式：F(0)=1，F(1)=1, F(n)=F(n-1)+F(n-2)（n>2，n∈N*）
-
-```js
-function Fibonacci(n) {
-  if (n < 2) {
-    return n;
-  }
-  return Fibonacci(n -1) + Fibonacci(n - 2);
-}
-```
-
-## 队列
-
-## 链表
-
-## 图
-
-## 树
-
-### 数据结构中的基本定义
-
-树（tree）是包含n（n>=0）个结点的有穷集， 由根结点和若干颗子树构成的。
-
-度：指的是一个节点拥有子节点的个数。如二叉树的节点的最大度为2。
-
-深度：数的层数，根节点为第一层，依次类推。
-
-叶子节点：度为0的节点，即没有子节点的节点。
-
-### 树的种类
-
-无序树：树中任意节点的子结点之间没有顺序关系，这种树称为无序树,也称为自由树;
-
-有序树：树中任意节点的子结点之间有顺序关系，这种树称为有序树；
-
-二叉树：每个节点最多含有两个子树的树称为二叉树；
-
-满二叉树： 除了叶结点外每一个结点都有左右子叶且叶结点都处在最底层的二叉树,
-
-完全二叉树：只有最下面的两层结点度小于2，并且最下面一层的结点都集中在该层最左边的若干位置的二叉树
-
-平衡二叉树：树的左右子树的高度差不超过1的数，空树也是平衡二叉树的一种
-
-霍夫曼树：带权路径最短的二叉树称为哈夫曼树或最优二叉树；
-
-### 遍历方法
-
-先序遍历，中序遍历，后序遍历, 深度优先遍历，广度优先遍历
 
 ## 发布/订阅
 
@@ -264,8 +274,45 @@ var broadcast = {
 1. 一个函数内部可以访问函数外部的变量
 2. 引用的数据不会被垃圾回收机制回收
 
+##  函数
 
-## js 兼容不同浏览器环境执行
+函数包含有函数声明式和函数表达式
+
+### 两者区别
+
+变量和函数声明会被提升到作用域的顶端，函数声明式不存在变量提示，可能会被覆盖
+
+### 自执行函数
+
+1. 形如 `(function(() => { // to...do }))`;
+2. 有一些函数前面加上 `~ +  - ! ()` 等符号，可以造成函数自执行;
+
+形如（）、！、+、-、= 等运算符，都将函数声明转换成函数表达式，消除了javascript引擎识别函数表达式和函数声明的歧义，告诉javascript引擎这是一个函数表达式，不是函数声明，可以在后面加括号，并立即执行函数的代码，但是其中加（）是最安全的，不会和函数的返回值进行计算；
+
+### 箭头函数
+
+1. 当我们使用箭头函数的时候，箭头函数默认绑定最外层的 `this`, 箭头函数的 `this` 和 外层的 `this` 是一致的
+2. 箭头函数的不存在作用域提升，需要在使用前定义
+3. IE 11 及 更早 IE版本不支持箭头函数
+
+### 构造函数
+
+用 `new` 关键字来调用的函数，称为构造函数。
+
+#### 构造函数的特点
+
+1. 构造函数的函数名第一个字母通常大写
+2. 函数体内使用`this`关键字，代表所生成的实例对象
+3. 生成对象的时候，必须使用`new`命令来调用构造函数
+
+#### new关键词都做了什么
+
+1. 创建一个空对象，作为将要返回的对象实例
+2. 将空对象的原型指向了构造函数的prototype属性
+3. 将空对象赋值给构造函数内部的this关键字
+4. 开始执行构造函数内部的代码
+
+### 兼容不同浏览器环境
 
 ```js
 ! function (e, t) {
@@ -298,3 +345,34 @@ var broadcast = {
    }([])
  })
 ```
+
+
+
+### ES6 Class
+
+[传送门](http://es6.ruanyifeng.com/#docs/class)
+
+## 排序算法
+
+1. 冒泡排序
+
+```js
+function bubbing() {
+  for (let i = 0; i < a.length; i++) {
+    for (let j = i + 1; j < a.length; j++) {
+      if (a[i] > a[j]) {
+        let temp = a[i];
+        a[i] = a[j];
+        a[j] = temp;
+      }
+    }
+  }
+  return a;
+}
+```
+2. 数组sort方法
+
+从小到大： `a.sort((a,b) => a - b)`
+
+从大到小： `a.sort((a,b) => b - a)`
+

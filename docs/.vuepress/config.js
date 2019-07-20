@@ -4,13 +4,15 @@ module.exports = {
   themeConfig: {
     nav: [{
       text: '日常学习',
-      items: [{
-        text: 'vue深入学习',
-        link: '/learn/vue/'
-      }, {
-        text: 'js深入学习笔记',
-        link: '/learn/js/'
-      }]
+      items: [
+        {
+          text: 'vue学习文档',
+          link: '/learn/vue/'
+        }, {
+          text: 'JS学习文档',
+          link: '/learn/js/'
+        }
+      ]
     }],
     sidebar: {
       '/learn/vue/': [
@@ -18,7 +20,9 @@ module.exports = {
         '/learn/vue/components.md'
       ],
       '/learn/js/': [
-        '/learn/js/'
+        '/learn/js/',
+        '/learn/js/structure.md',
+        '/learn/js/design.md'
       ]
     },
     activeHeaderLinks: true,
@@ -28,6 +32,6 @@ module.exports = {
     anchor: {
       permalink: true,
     },
-    lineNumbers: true // 代码块显示行号
+    lineNumbers: true
   }
 }
