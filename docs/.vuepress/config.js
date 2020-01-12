@@ -33,5 +33,14 @@ module.exports = {
       permalink: true,
     },
     lineNumbers: true
+  },
+  plugins: {
+    '@vssue/vuepress-plugin-vssue': {
+      platform: 'github',
+      owner: 'wjs',
+      repo: 'https://github.com/qqxiaofeizhu/helper',
+      clientId: '8d04a92735d121245c56',
+      clientSecret: '6f4df2b0562d0947085c200aeb8c18dd7a836fa3',
+    }
   }
 }

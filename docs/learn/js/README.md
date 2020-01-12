@@ -1,5 +1,5 @@
 ---
-title: 'JS深入'
+title: JS
 sidebarDepth: 3
 ---
 
@@ -375,4 +375,3 @@ function bubbing() {
 从小到大： `a.sort((a,b) => a - b)`
 
 从大到小： `a.sort((a,b) => b - a)`
-
