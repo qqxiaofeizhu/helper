@@ -1,46 +1,46 @@
-module.exports = {
-  title: '前端学习文档',
-  description: '书山有路勤为径，学海无涯苦做舟',
+const fs = require('fs');
+const path = require('path');
+
+module.exports = ctx => ({
+  // 假定是 GitHub. 同时也可以是一个完整的 GitLab URL
+  repo: 'https://github.com/qqxiaofeizhu/helper',
+  // 自定义仓库链接文字。默认从 `themeConfig.repo` 中自动推断为
+  // "GitHub"/"GitLab"/"Bitbucket" 其中之一，或是 "Source"。
+  repoLabel: '查看源码',
+  // 以下为可选的编辑链接选项
+  // 假如文档不是放在仓库的根目录下：
+  docsDir: 'docs',
+  // 假如文档放在一个特定的分支下：
+  docsBranch: 'master',
+  // 默认是 false, 设置为 true 来启用
+  editLinks: true,
+  // 默认为 "Edit this page"
+  editLinkText: '帮助我们改善此页面！',
   themeConfig: {
-    nav: [{
-      text: '日常学习',
-      items: [
-        {
-          text: 'vue学习文档',
-          link: '/learn/vue/'
-        }, {
-          text: 'JS学习文档',
-          link: '/learn/js/'
-        }
-      ]
-    }],
+    nav: require('./nav/index'),
     sidebar: {
-      '/learn/vue/': [
-        '/learn/vue/',
-        '/learn/vue/components.md'
-      ],
       '/learn/js/': [
-        '/learn/js/',
-        '/learn/js/structure.md',
-        '/learn/js/design.md'
-      ]
-    },
-    activeHeaderLinks: true,
-    lastUpdated: true,
-  },
-  markdown: {
-    anchor: {
-      permalink: true,
-    },
-    lineNumbers: true
-  },
-  plugins: {
-    '@vssue/vuepress-plugin-vssue': {
-      platform: 'github',
-      owner: 'wjs',
-      repo: 'https://github.com/qqxiaofeizhu/helper',
-      clientId: '8d04a92735d121245c56',
-      clientSecret: '6f4df2b0562d0947085c200aeb8c18dd7a836fa3',
+        '',
+        '20190705.md'
+      ],
     }
-  }
-}
+  },
+  plugins: [
+    ['@vuepress/back-to-top', true],
+    ['@vuepress/pwa', {
+      serviceWorker: true,
+      updatePopup: true
+    }],
+    ['@vuepress/medium-zoom', true],
+    ['container', {
+      type: 'vue',
+      before: '<pre class="vue-container"><code>',
+      after: '</code></pre>'
+    }]
+  ]
+})
+
+const officalPlugins = fs
+  .readdirSync(path.resolve(__dirname, '../learn/js'))
+  .filter(filename => filename.endsWith('.md') && filename.slice(0, -3))
+  .sort()
